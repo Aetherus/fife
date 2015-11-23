@@ -1,6 +1,8 @@
 require "rubygems"
 require "bundler"
 require "tempfile"
+require "securerandom"
+require "pp"
 Bundler.require(:default, :test)
 
 $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))

@@ -1,16 +1,15 @@
 require 'spec_helper'
 
 describe 'Fife::Pipe' do
-  let :file do
-    Tempfile.new('dummy')
-  end
+  let(:files) { 3.times.map{|i| Tempfile.new(i.to_s)} }
 
-  let :pipe do
-    Fife::Pipe.new(file)
-  end
+  let(:pipe) { Fife::Pipe.new(files) }
 
   after :each do
-    file.unlink
+    files.each do |f|
+      f.close unless f.closed?
+      f.unlink
+    end
   end
 
   it 'returns a new Pipe' do
@@ -19,15 +18,19 @@ describe 'Fife::Pipe' do
     p.should_not equal pipe
   end
 
-  it 'does nothing to a closed file' do
-    file.close
-    p = pipe.pipe(proc {Tempfile.new('fake')})
-    p.files[0].should == pipe.files[0]
+  it 'does nothing to closed files' do
+    files.sample.close
+    closed_files = pp files.select(&:closed?)
+    p = pipe.pipe(-> f {Tempfile.new(SecureRandom.uuid).tap(&:close)})
+    (pp(p.files) & pp(files)).should == closed_files
   end
 
-  it 'manipulates open file' do
+  it 'manipulates open files' do
     p = pipe.pipe(-> f {f.write('xxx'); f})
-    p.files[0].tap(&:rewind).read.should == 'xxx'
+    p.files.each do |f|
+      f.rewind
+      f.read.should == 'xxx'
+    end
   end
 
 end

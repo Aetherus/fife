@@ -1,26 +1,26 @@
 module Fife
   class Pipe
 
-    class ClosedIO < RuntimeError; end
-
     attr_reader :files
 
     def initialize(*files)
-      @files = files
+      @files = files.flatten
     end
 
     def pipe(op)
-      new_files = []
+      output = []
 
-      files.map do |file|
+      files.map { |file|
         Thread.new do
-          file.rewind unless file.closed?
-          op = file.closed? ? Operations::Noop : op
-          new_files << op.call(file)
+          output << if file.closed?
+            Operations::Noop.call(file)
+          else
+            op.call(file.tap(&:rewind))
+          end
         end
-      end.each(&:join)
+      }.each(&:join)
 
-      self.class.new(*new_files)
+      self.class.new(output)
     end
 
   end

@@ -20,7 +20,7 @@ describe 'Fife::Pipe' do
 
   it 'does nothing to closed files' do
     files.sample.close
-    closed_files = pp files.select(&:closed?)
+    closed_files = files.select(&:closed?)
     p = pipe.pipe(-> f {Tempfile.new(SecureRandom.uuid).tap(&:close)})
     (p.files & files).should == closed_files
   end

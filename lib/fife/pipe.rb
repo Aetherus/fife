@@ -23,5 +23,9 @@ module Fife
       self.class.new(output)
     end
 
+    def store
+      Fife.storage.store(files)
+    end
+
   end
 end

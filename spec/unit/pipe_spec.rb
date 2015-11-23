@@ -1,16 +1,9 @@
 require 'spec_helper'
 
 describe 'Fife::Pipe' do
-  let(:files) { 3.times.map{|i| Tempfile.new(i.to_s)} }
-
-  let(:pipe) { Fife::Pipe.new(files) }
-
-  after :each do
-    files.each do |f|
-      f.close unless f.closed?
-      f.unlink
-    end
-  end
+  # let(:files) { 3.times.map{|i| Tempfile.new(i.to_s)} }
+  # let(:pipe) { Fife::Pipe.new(files) }
+  include_examples 'mock'
 
   it 'returns a new Pipe' do
     p = pipe.pipe(-> f {f})

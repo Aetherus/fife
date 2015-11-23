@@ -1,11 +1,9 @@
-require "rubygems"
-require "bundler"
-require "tempfile"
-require "securerandom"
+require 'rubygems'
+require 'bundler'
+require 'tempfile'
+require 'securerandom'
+require 'fileutils'
 Bundler.require(:default, :test)
-
-$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
-$LOAD_PATH.unshift(File.expand_path('..', __FILE__))
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
@@ -13,5 +11,23 @@ RSpec.configure do |config|
   end
   config.mock_with :rspec do |c|
     c.syntax = :should
+  end
+end
+
+RSpec.shared_examples 'mock' do
+  let(:files) { 3.times.map{Tempfile.new(SecureRandom.uuid)} }
+  let(:pipe) { Fife::Pipe.new(files) }
+  let(:tmpdir) {Pathname('/tmp/fife_test')}
+
+  before :each do
+    Fife.storage = Fife::Storage::SFTP.new('localhost', 'zhoumh', tmpdir, password: '1q2w3e4r5t')
+  end
+
+  after :each do
+    files.each do |f|
+      f.close unless f.closed?
+      f.unlink
+    end
+    FileUtils.rmtree tmpdir
   end
 end

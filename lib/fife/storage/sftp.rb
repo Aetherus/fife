@@ -18,7 +18,7 @@ module Fife
         stored = []
         Net::SFTP.start(host, user, ssh_options) do |sftp|
           files.flatten.each do |file|
-            file.close unless file.closed?
+            file.close
             basename = File.basename(file.path)
             sftp.upload! file.path, dir.join(basename)
             stored << basename

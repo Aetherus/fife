@@ -25,8 +25,11 @@ RSpec.shared_examples 'mock' do
 
   after :each do
     files.each do |f|
-      f.close unless f.closed?
-      f.unlink
+      begin
+        f.unlink
+      ensure
+        f.close!
+      end
     end
     FileUtils.rmtree tmpdir
   end

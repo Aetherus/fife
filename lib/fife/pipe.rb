@@ -2,7 +2,7 @@ class Fife::Pipe
 
   attr_reader :ios
 
-  def initialize(*ios)
+  def initialize(ios)
     @ios = ios.flatten.tap(&:compact!)
   end
 

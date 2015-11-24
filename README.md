@@ -1,8 +1,10 @@
 # Fife
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fife`. To experiment with that code, run `bin/console` for an interactive prompt.
+**Fife** is a multiple IO pipelining tool, originally designed for
+file uploading through HTTP, but can be used in any other cases.
 
-TODO: Delete this and the text above, and describe your gem
+## Warning
+This gem is in early development stage.
 
 ## Installation
 
@@ -22,7 +24,85 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Create a `Fife` instance by calling `Fife(io_ary)`,
+then chain as many `pipe` calls as you want.
+
+```ruby
+io_ary = [
+  File.new('/path/to/my/file'),
+  StringIO.new('Hello world'),
+  Tempfile.new('temp')
+]
+
+Fife(io_ary).pipe(-> io {io})
+            .pipe(-> io {[io, io]})
+            .pipe(:close)
+```
+
+### Kernel#Fife(*ios)
+
+This method returns a `Fife::Pipe` instance for chaining.
+
+This method expect 0 or more IO-like objects as arguments.
+Alternatively it can take an array of IO-like objects
+
+### Fife::Pipe#pipe
+
+This method returns a new `Fife::Pipe` instance.
+
+It has 2 forms of usage:
+
+1.  pass an operation as the argument
+`Fife(io_ary).pipe(->io{io})`
+2.  pass the underscored name of an operation class,
+and 0 or more arguments as the constructor arguments of that class.
+`Fife(io_ary).pipe(:store, my_storage)`
+see *Define custom operations* for detail.
+
+### Operation
+
+An operation is an object that responds to `call(io)`, and returns 0 or more IO-like objects.
+A *lambda* is often used as an operation, but an operation can be of any type.
+
+Currently, `Fife` ships with 4 operations: `:noop`, `:name`, `:store` and `:close`
+
+* noop
+Performs no operation on the IO, and returns the IO directly.
+* close
+Closes the
+* store
+Stores the content of the IO.
+* name
+Gives the IO a name according to the per-io naming strategy you specified.
+You can retrieve it's name by calling `#name` on the IO instance.
+```ruby
+name = Fife::Operations::Name.new(->io { 'some_name' })
+Fife(io_ary).pipe(name)
+
+# Or
+Fife(io_ary).pipe(:name, ->io { 'some_name' })
+```
+
+#### Define custom operations
+
+If you feel lambdas are not enough for your job,
+you can easily define your own operations.
+
+```ruby
+class Fife::Operations::MyOperation
+  def initialize(arg1, arg2)
+    # Initialize the Operation
+  end
+
+  def call(io)
+    # Handle the io and return some IO instances
+  end
+end
+```
+Then you can use it like
+```ruby
+Fife(io_ary).pipe(:my_operation, 1, 2)
+```
 
 ## Development
 
@@ -32,5 +112,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fife.
+Bug reports and pull requests are welcome on GitHub at https://github.com/aetherus/fife.
 

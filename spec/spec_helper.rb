@@ -23,7 +23,7 @@ RSpec.shared_examples 'mock' do
         StringIO.open('', 'w+')
     ]
   }
-  let(:pipe) { Fife.pipe(ios) }
+  let(:pipe) { Fife(ios) }
   let(:tmpdir) {Pathname('/tmp/fife_test')}
   let(:storage) { Fife::Storage::Sftp.new('localhost', 'zhoumh', tmpdir, password: '1q2w3e4r5t') }
 

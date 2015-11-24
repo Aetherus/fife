@@ -8,8 +8,10 @@ module Fife
   autoload :Operations
   autoload :Storage
   autoload :HasName
+end
 
-  def self.pipe(*ios)
-    Pipe.new(ios)
+module Kernel
+  def Fife(*ios)
+    Fife::Pipe.new(ios)
   end
 end

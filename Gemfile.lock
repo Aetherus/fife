@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fife (0.1.0)
+    fife (0.0.1.alpha)
       activesupport
       net-sftp
 

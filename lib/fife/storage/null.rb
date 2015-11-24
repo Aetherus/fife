@@ -1,13 +1,5 @@
-module Fife
-  module Storage
-
-    class Null
-
-      def store(*files)
-        # Do nothing
-      end
-
-    end
-
+class Fife::Storage::Null
+  def store(io)
+    # Do nothing
   end
 end

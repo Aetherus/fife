@@ -1,6 +1,8 @@
-module Fife
-  module Storage
-    autoload :Null, 'fife/storage/null'
-    autoload :SFTP, 'fife/storage/sftp'
-  end
+module Fife::Storage
+  extend ActiveSupport::Autoload
+
+  class UnnamedIO < RuntimeError; end
+
+  autoload :Null
+  autoload :Sftp
 end

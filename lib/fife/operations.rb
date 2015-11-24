@@ -1,7 +1,8 @@
-module Fife
-  module Operations
-    autoload :Noop, 'fife/operations/noop'
-    autoload :Close, 'fife/operations/close'
-    autoload :Rename, 'fife/operations/rename'
-  end
+module Fife::Operations
+  extend ActiveSupport::Autoload
+
+  autoload :Noop
+  autoload :Close
+  autoload :Name
+  autoload :Store
 end

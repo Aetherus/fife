@@ -1,31 +1,21 @@
-module Fife
-  class Pipe
+class Fife::Pipe
 
-    attr_reader :files
+  attr_reader :ios
 
-    def initialize(*files)
-      @files = files.flatten
-    end
-
-    def pipe(op)
-      output = []
-
-      files.map { |file|
-        Thread.new do
-          output << if file.closed?
-            Operations::Noop.call(file)
-          else
-            op.call(file.tap(&:rewind))
-          end
-        end
-      }.each(&:join)
-
-      self.class.new(output)
-    end
-
-    def store
-      Fife.storage.store(files)
-    end
-
+  def initialize(*ios)
+    @ios = ios.flatten.tap(&:compact!)
   end
+
+  def pipe(op)
+    output = []
+
+    ios.map { |io|
+      Thread.new do
+        output << op.call(io.tap(&:rewind))
+      end
+    }.each(&:join)
+
+    self.class.new(output)
+  end
+
 end

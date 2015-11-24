@@ -4,7 +4,7 @@ require 'fileutils'
 module Fife
   module Operations
 
-    class Rename
+    class Name
 
       class NoBlockGiven < RuntimeError; end
 
@@ -13,11 +13,10 @@ module Fife
         @naming = block
       end
 
-      def call(file)
-        new_path = Pathname(File.dirname(file.path)).join(@naming.call(file))
-        file.close
-        FileUtils.move(file.path, new_path)
-        File.open(new_path)
+      def call(io)
+        io.extend(HasName)
+        io.name = @naming.call(io)
+        io
       end
 
     end

@@ -1,12 +1,11 @@
-require "fife/version"
+require 'fife/version'
+require 'active_support/all'
 
 module Fife
-  autoload :Pipe, 'fife/pipe'
-  autoload :Operations, 'fife/operations'
-  autoload :Storage, 'fife/storage'
-  autoload :RenamedFile, 'fife/renamed_file'
+  extend ActiveSupport::Autoload
 
-  class << self
-    attr_accessor :storage
-  end
+  autoload :Pipe
+  autoload :Operations
+  autoload :Storage
+  autoload :HasName
 end

@@ -4,7 +4,7 @@
 file uploading through HTTP, but can be used in any other cases.
 
 ## Warning
-This gem is in early development stage.
+This gem is in early development stage, and the interface could be changed enormously in future releases.
 
 ## Installation
 
@@ -104,6 +104,26 @@ Then you can use it like
 Fife(io_ary).pipe(:my_operation, 1, 2)
 ```
 
+### Storage
+To leverage the `:store` operation, you need a *storage*.
+
+A storage is just an object that responds to `store(io)`.
+
+Currently, **Fife** ships with 2 storage classes:
+
+* `Fife::Storage::Null`
+Simply does nothing
+* `Fife::Storage::Sftp`
+Streams the IO to a remote file via SFTP.
+This storage should be used with `:name` operation because
+the remote filename depends on the name of the IO.
+(I know it's nasty, but it's still under developing)
+
+```ruby
+storage = Fife::Storage::Sftp.new('localhost', 'me', '/path/to/remote/dir', password: 'P@ssw0rd')
+Fife(io_ary).pipe(:store, storage)
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -113,4 +133,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/aetherus/fife.
-

@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Fife::VERSION
   spec.authors       = ['aetherus']
   spec.email         = ['aetherus.zhou@gmail.com']
+  spec.licenses      = ['MIT']
 
   spec.summary       = 'A multiple IO pipelining tool'
   spec.description   = %q{
@@ -23,7 +24,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec'
-  spec.add_runtime_dependency 'net-sftp'
-  spec.add_runtime_dependency 'activesupport'
+  spec.add_development_dependency 'rspec', '~> 3.4'
+  spec.add_runtime_dependency 'net-sftp', '~> 2.1'
+  spec.add_runtime_dependency 'activesupport', '~> 4.2'
 end

@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     fife (0.0.1.alpha)
-      activesupport
-      net-sftp
+      activesupport (~> 4.2)
+      net-sftp (~> 2.1)
 
 GEM
   remote: http://rubygems.org/
@@ -46,7 +46,7 @@ DEPENDENCIES
   bundler (~> 1.10)
   fife!
   rake (~> 10.0)
-  rspec
+  rspec (~> 3.4)
 
 BUNDLED WITH
    1.10.6

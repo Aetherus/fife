@@ -1,25 +1,14 @@
 require 'pathname'
 require 'fileutils'
 
-module Fife
-  module Operations
+class Fife::Operations::Name
+  def initialize(naming)
+    @naming = naming
+  end
 
-    class Name
-
-      class NoBlockGiven < RuntimeError; end
-
-      def initialize(&block)
-        raise NoBlockGiven unless block_given?
-        @naming = block
-      end
-
-      def call(io)
-        io.extend(HasName)
-        io.name = @naming.call(io)
-        io
-      end
-
-    end
-
+  def call(io)
+    io.extend(Fife::HasName)
+    io.name = @naming.call(io)
+    io
   end
 end

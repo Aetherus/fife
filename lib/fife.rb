@@ -8,4 +8,8 @@ module Fife
   autoload :Operations
   autoload :Storage
   autoload :HasName
+
+  def self.pipe(*ios)
+    Pipe.new(ios)
+  end
 end

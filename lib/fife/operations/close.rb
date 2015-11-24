@@ -1,7 +1,5 @@
-module Fife
-  module Operations
-
-    Close = -> io {io.close; io}
-
+class Fife::Operations::Close
+  def call(io)
+    io.close unless io.closed?
   end
 end

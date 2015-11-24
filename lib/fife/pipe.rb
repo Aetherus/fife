@@ -6,7 +6,8 @@ class Fife::Pipe
     @ios = ios.flatten.tap(&:compact!)
   end
 
-  def pipe(op)
+  def pipe(op, *args)
+    op = Fife::Operations.const_get(op.to_s.camelize.to_sym).new(*args) unless op.respond_to? :call
     output = []
 
     ios.map { |io|

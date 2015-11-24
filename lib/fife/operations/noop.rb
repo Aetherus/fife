@@ -1,7 +1,5 @@
-module Fife
-  module Operations
-
-    Noop = -> io {io}
-
+class Fife::Operations::Noop
+  def call(io)
+    io
   end
 end

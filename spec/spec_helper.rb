@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'tempfile'
+require 'stringio'
 require 'securerandom'
 require 'fileutils'
 Bundler.require(:default, :test)
@@ -15,20 +16,20 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_examples 'mock' do
-  let(:ios) { 3.times.map{Tempfile.new(SecureRandom.uuid)} }
-  let(:pipe) { Fife::Pipe.new(ios) }
+  let(:ios) {
+    [
+        Tempfile.new(SecureRandom.uuid),
+        File.open(File.expand_path('../samples/sample.txt', __FILE__), 'w+'),
+        StringIO.open('', 'w+')
+    ]
+  }
+  let(:pipe) { Fife.pipe(ios) }
   let(:tmpdir) {Pathname('/tmp/fife_test')}
   let(:storage) { Fife::Storage::Sftp.new('localhost', 'zhoumh', tmpdir, password: '1q2w3e4r5t') }
-  let(:store) { Fife::Operations::Store.new(storage) }
-  let(:name) { Fife::Operations::Name.new { SecureRandom.uuid } }
 
   after :each do
-    ios.each do |f|
-      begin
-        f.unlink
-      ensure
-        f.close!
-      end
+    ios.each do |io|
+      io.close unless io.closed?
     end
     FileUtils.rmtree tmpdir
   end

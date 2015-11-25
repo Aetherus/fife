@@ -11,7 +11,7 @@ module Fife
 end
 
 module Kernel
-  def Fife(*ios)
-    Fife::Pipe.new(ios)
+  def Fife(*ios, abort_on_fail: false)
+    Fife::Pipe.new(ios.tap(&:flatten!).tap(&:compact!), abort_on_fail)
   end
 end

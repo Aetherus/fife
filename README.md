@@ -69,7 +69,7 @@ Currently, `Fife` ships with 4 operations: `:noop`, `:name`, `:store` and `:clos
 * noop
 Performs no operation on the IO, and returns the IO directly.
 * close
-Closes the
+Closes the IO if not already closed.
 * store
 Stores the content of the IO.
 * name
@@ -89,7 +89,7 @@ If you feel lambdas are not enough for your job,
 you can easily define your own operations.
 
 ```ruby
-class Fife::Operations::MyOperation
+class MyOperation
   def initialize(arg1, arg2)
     # Initialize the Operation
   end
@@ -98,10 +98,15 @@ class Fife::Operations::MyOperation
     # Handle the io and return some IO instances
   end
 end
+
+# Register it
+Fife::Operations.register(:my_op, MyOperation)
 ```
+
 Then you can use it like
+
 ```ruby
-Fife(io_ary).pipe(:my_operation, 1, 2)
+Fife(io_ary).pipe(:my_op, 1, 2)
 ```
 
 ### Storage
@@ -123,6 +128,18 @@ the remote filename depends on the name of the IO.
 storage = Fife::Storage::Sftp.new('localhost', 'me', '/path/to/remote/dir', password: 'P@ssw0rd')
 Fife(io_ary).pipe(:store, storage)
 ```
+
+### Abort on fail
+By default, **Fife** ignores all failures and keeps on executing further operations on succeeded operations.  
+This behavior can be changed by passing `abort_on_fail: true` to `Kernel#Fife`:
+
+```ruby
+Fife(io_ary, abort_on_fail: true)
+```
+
+When `abort_on_fail` is turned on, if some operation raises error, no further operation will be executed,
+and an `Fife::Pipe::Aborted` will be raised.
+You can get the real causes by accessing `Fife::Pipe::Aborted#causes`
 
 ## Development
 

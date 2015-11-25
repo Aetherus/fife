@@ -2,20 +2,47 @@ require 'net/sftp'
 require 'pathname'
 require 'fileutils'
 
-class Fife::Storage::Sftp
-  attr_reader :host, :user, :remote_dir, :ssh_options
+class Net::SFTP::Session
+  def mkdir_p!(pathname)
+    pathname = Pathname(pathname) unless pathname.is_a? Pathname
+    pathname.descend do |path|
+      mkdir!(path) rescue nil
+    end
+  end
+end
 
-  def initialize(host, user, remote_dir, ssh_options)
-    @host, @user, @ssh_options = host, user, ssh_options
-    @remote_dir = Pathname(remote_dir)
-    ensure_remote_dir_presence!
+class Fife::Storage::Sftp
+
+  class UninitializedAttributes < RuntimeError; end
+
+  REQUIRED_ATTRIBUTES = [:host, :user, :naming, :ssh_options, :remote_dir]
+
+  def remote_dir(*value)
+    return @remote_dir if value.empty?
+    @remote_dir = Pathname(value[0])
+  end
+
+  (REQUIRED_ATTRIBUTES - [:remote_dir]).each do |attr|
+    class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      def #{attr}(*value)
+        return @#{attr} if value.empty?
+        @#{attr} = value[0]
+      end
+    RUBY
+  end
+
+  def initialize(&block)
+    instance_eval &block
+    uninitialized_attributes = REQUIRED_ATTRIBUTES.select{|attr| send(attr).nil?}
+    raise UninitializedAttributes, uninitialized_attributes unless uninitialized_attributes.empty?
   end
 
   def store(io)
-    raise UnnamedIO unless io.respond_to? :name
-    remote_path = remote_dir.join(io.name)
+    remote_path = remote_dir.join(@naming.call(io))
+    dir = remote_path.dirname
     Net::SFTP.start(host, user, ssh_options) do |sftp|
-      sftp.file.open(remote_path, 'w') { |f| IO.copy_stream(io, f) }
+      sftp.mkdir_p!(dir)
+      sftp.file.open(remote_path, 'w') { |f| IO.copy_stream(io.tap(&:rewind), f) }
     end
     io.close
   end

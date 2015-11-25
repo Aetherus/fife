@@ -5,8 +5,8 @@ describe 'Fife::Operations::Rename' do
 
   it 'stores the file names' do
     pipe.pipe(-> io {io.write 'Lorem Ipsum'; io})
-        .pipe(:name, -> io {SecureRandom.uuid})
         .pipe(:store, storage)
+        .pipe(:close)
     stored_files = Dir[tmpdir.join('*')]
     stored_files.count.should == ios.count
     stored_files.each do |f|

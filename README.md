@@ -125,7 +125,13 @@ the remote filename depends on the name of the IO.
 (I know it's nasty, but it's still under developing)
 
 ```ruby
-storage = Fife::Storage::Sftp.new('localhost', 'me', '/path/to/remote/dir', password: 'P@ssw0rd')
+storage = Fife::Storage::Sftp.new do
+  host 'localhost'
+  user 'me'
+  remote_dir '/path/to/my/remote/dir'
+  naming -> io {"lorem_ipsum_#{rand}"}
+  ssh_options password: 's3cret'
+end
 Fife(io_ary).pipe(:store, storage)
 ```
 

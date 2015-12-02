@@ -6,6 +6,6 @@ class Fife::Operations::Store
   end
 
   def call(io)
-    storage.store(io)
+    storage.store(io); io
   end
 end

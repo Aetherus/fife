@@ -26,5 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_runtime_dependency 'net-sftp', '~> 2.1'
-  spec.add_runtime_dependency 'activesupport', '~> 4.2'
+  spec.add_runtime_dependency 'activesupport', '>= 3.0'
 end
